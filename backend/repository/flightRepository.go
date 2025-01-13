@@ -27,6 +27,7 @@ func (r *FlightRepository) GetDirectFlights(source, destination string, date str
 	if result.Error != nil {
 		return nil, result.Error
 	}
+
 	return flights, nil
 }
 

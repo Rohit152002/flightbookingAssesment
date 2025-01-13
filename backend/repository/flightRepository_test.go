@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"testing"
-	
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -70,11 +69,11 @@ func TestFlight(t *testing.T) {
 			WithArgs("delhi", "mumbai", "2025-01-08").
 			WillReturnRows(rows)
 
-		result, err := flightRepository.GetFlights("delhi", "mumbai", "2025-01-10")
+		result, err := flightRepository.GetDirectFlights("delhi", "mumbai", "2025-01-10")
 		fmt.Println("Actual SQL Query: ", mock.ExpectationsWereMet())
 
 		assert.NoError(t, err)
-		for _, value := range *result {
+		for _, value := range result {
 			assert.Equal(t, value.Source, "delhi")
 			assert.Equal(t, value.Destination, "mumbai")
 		}

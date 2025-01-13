@@ -5,6 +5,7 @@ export const useFlightStore = defineStore("flightStation", {
   state: () => ({
     stations: [],
     flights: [],
+    bookedFlight: {},
   }),
   actions: {
     async getStations() {
