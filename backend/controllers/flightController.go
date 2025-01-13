@@ -40,3 +40,22 @@ func (ctrl *FlightController) SearchFlightController(c *gin.Context) {
 		"data": flights,
 	})
 }
+
+func (ctrl *FlightController) TwoWayFlightSearchController(c *gin.Context) {
+	source := c.Query("source")
+	destination := c.Query("destination")
+	departureDate := c.Query("departure-date")
+	returnDate := c.Query("return-date")
+
+	departureFlights, returnFlights, err := ctrl.FlightService.GetFlightsWithReturn(source, destination, departureDate, returnDate)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "error in parsing date"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"departureFlights": departureFlights,
+		"returnFlights":    returnFlights,
+	})
+}

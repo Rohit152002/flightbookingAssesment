@@ -18,4 +18,5 @@ func FlightRoutes(router *gin.Engine, db *gorm.DB) {
 
 	router.GET("/station", flightController.GetStationController)
 	router.GET("/flights", flightController.SearchFlightController)
+	router.GET("/flights/two-way", flightController.TwoWayFlightSearchController)
 }

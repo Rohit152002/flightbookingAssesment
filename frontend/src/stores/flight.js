@@ -6,6 +6,12 @@ export const useFlightStore = defineStore("flightStation", {
     stations: [],
     flights: [],
     bookedFlight: {},
+    departureFlights: [],
+    returnFlights: [],
+    selectedDepartureFlights: {},
+    selectedReturnFlights: {},
+    selectedJourneyPrice: 0,
+    selectedReturnPrice: 0,
   }),
   actions: {
     async getStations() {
@@ -22,6 +28,18 @@ export const useFlightStore = defineStore("flightStation", {
 
     setFlight(value) {
       this.flights = value;
+    },
+    setDepartureFlights(value) {
+      this.selectedDepartureFlights = value;
+    },
+    setReturnFlights(value) {
+      this.selectedReturnFlights = value;
+    },
+    setJourneyPrice(value) {
+      this.selectedJourneyPrice = value;
+    },
+    setReturnPrice(value) {
+      this.selectedReturnPrice = value;
     },
   },
 });

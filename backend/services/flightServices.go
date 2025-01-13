@@ -13,27 +13,10 @@ func (r *FlightServices) GetDistinctSources() (*[]string, error) {
 	return r.Repo.GetStation()
 }
 
-// func (r *FlightServices) SearchFlights(source string, destination string, date string) (*[]models.FlightResponse, error) {
-// 	if source == "" || destination == "" {
-// 		return nil, errors.New("source and destination are required")
-// 	}
-// 	// if date.Compare(time.Now()) == -1 {
-// 	// 	return nil, errors.New("The selected date is in the past. Please choose a valid future date.")
-// 	// }
-
-// 	return r.Repo.GetFlights(source, destination, date)
-// }
-
-func (s *FlightServices) GetFlights(source, destination string, date string) ([]models.FlightResponse, error) {
-
-	directFlights, err := s.Repo.GetDirectFlights(source, destination, date)
-	if err != nil {
-		return nil, err
-	}
-
-	var directFlightResponses []models.FlightResponse
-	for _, flight := range directFlights {
-		directFlightResponses = append(directFlightResponses, models.FlightResponse{
+func (s *FlightServices) mapFlightDetails(flights []models.Flight) []models.FlightResponse {
+	var flightResponses []models.FlightResponse
+	for _, flight := range flights {
+		flightResponses = append(flightResponses, models.FlightResponse{
 			ID:            flight.ID,
 			Source:        flight.Source,
 			Destination:   flight.Destination,
@@ -45,20 +28,16 @@ func (s *FlightServices) GetFlights(source, destination string, date string) ([]
 			Airline:       flight.Airline,
 		})
 	}
+	return flightResponses
+}
 
-	layoverFlights, err := s.Repo.GetConnectingFlights(source, date)
-	if err != nil {
-		return nil, err
-	}
-
+func (s *FlightServices) mapConnectingFlights(layoverFlights []models.Flight, destination, date string) ([]models.FlightResponse, error) {
 	var connectingFlightResponses []models.FlightResponse
 	for _, layover := range layoverFlights {
-
 		nextLegs, err := s.Repo.GetDirectFlights(layover.Destination, destination, date)
 		if err != nil {
 			return nil, err
 		}
-
 		for _, nextLeg := range nextLegs {
 			connectingFlightResponses = append(connectingFlightResponses, models.FlightResponse{
 				Source:             layover.Source,
@@ -75,8 +54,40 @@ func (s *FlightServices) GetFlights(source, destination string, date string) ([]
 			})
 		}
 	}
+	return connectingFlightResponses, nil
+}
+
+func (s *FlightServices) GetFlights(source, destination, date string) ([]models.FlightResponse, error) {
+	directFlights, err := s.Repo.GetDirectFlights(source, destination, date)
+	if err != nil {
+		return nil, err
+	}
+	directFlightResponses := s.mapFlightDetails(directFlights)
+
+	layoverFlights, err := s.Repo.GetConnectingFlights(source, date)
+	if err != nil {
+		return nil, err
+	}
+	connectingFlightResponses, err := s.mapConnectingFlights(layoverFlights, destination, date)
+	if err != nil {
+		return nil, err
+	}
 
 	allFlights := append(directFlightResponses, connectingFlightResponses...)
-
 	return allFlights, nil
+}
+
+func (s *FlightServices) GetFlightsWithReturn(source, destination, departureDate, returnDate string) ([]models.FlightResponse, []models.FlightResponse, error) {
+	onwardFlights, err := s.GetFlights(source, destination, departureDate)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	returnFlights, err := s.GetFlights(destination, source, returnDate)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// allFlights := append(onwardFlights, returnFlights...)
+	return onwardFlights, returnFlights, nil
 }

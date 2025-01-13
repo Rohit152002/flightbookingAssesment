@@ -11,13 +11,18 @@ type FlightRepository struct {
 }
 
 func (r *FlightRepository) GetStation() (*[]string, error) {
-	var station []string
+	var stations []string
 
-	result := r.DB.Model(&models.Flight{}).Distinct("source").Pluck("source", &station)
+	query := `
+		(SELECT DISTINCT source AS station FROM flights)
+		UNION
+		(SELECT DISTINCT destination AS station FROM flights)
+	`
+	result := r.DB.Raw(query).Pluck("station", &stations)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	return &station, nil
+	return &stations, nil
 }
 
 func (r *FlightRepository) GetDirectFlights(source, destination string, date string) ([]models.Flight, error) {
