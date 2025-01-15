@@ -1,68 +1,36 @@
 <template>
-  <div class="w-screen mx-auto">
-    <form
-      @submit.prevent="SearchFlight"
-      class="flex flex-wrap gap-6 border border-gray-300 rounded-lg p-6"
-    >
+  <div class="h-full mx-auto ">
+    <form @submit.prevent="SearchFlight" class="flex flex-wrap gap-6 border border-gray-300 rounded-lg p-6">
       <div class="flex gap-6 w-full mb-4">
         <label class="flex items-center space-x-2">
-          <input
-            type="radio"
-            name="tripType"
-            value="one-way"
-            v-model="tripType"
-            @click="flights=null"
-            checked
-          />
+          <input type="radio" name="tripType" value="one-way" v-model="tripType" @click="flights = null" checked />
           <span>One Way</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input
-            type="radio"
-            name="tripType"
-            value="round-trip"
-            @click="flights=null"
-            v-model="tripType"
-          />
+          <input type="radio" name="tripType" value="round-trip" @click="flights = null" v-model="tripType" />
           <span>Round Trip</span>
         </label>
       </div>
 
+
+
       <div class="flex flex-wrap gap-4 w-full mb-4 items-end">
         <div class="w-full flex justify-around items-end gap-4">
           <div class="flex flex-col relative w-full sm:w-[280px] space-y-4">
-            <label for="source" class="text-lg font-medium text-gray-700"
-              >Source:</label
-            >
-            <input
-              v-model="source"
-              @input="filterSource"
-              type="text"
-              name="source"
-              id="source"
+            <label for="source" class="text-lg font-medium text-gray-700">Source:</label>
+            <input v-model="source" @input="filterSource" type="text" name="source" id="source"
               class="border relative border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
-              placeholder="Search for a station..."
-              required
-              @keydown.down="navigateDown"
-              @keydown.up="navigateUp"
-              @keydown.enter="selectStationFromKeyboard"
-            />
+              placeholder="Search for a station..." required @keydown.down="navigateDown" @keydown.up="navigateUp"
+              @keydown.enter="selectStationFromKeyboard" />
 
             <!-- Floating Station List -->
-            <div
-              v-if="source && filteredStations.length && !sourceSelected"
-              class="absolute top-full w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10"
-            >
+            <div v-if="source && filteredStations.length && !sourceSelected"
+              class="absolute top-full w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
               <div class="space-y-2">
-                <p
-                  v-for="(station, i) in filteredStations"
-                  :key="i"
-                  :class="{
-                    'bg-indigo-100 text-indigo-700': i === highlightedIndex,
-                  }"
-                  @click="selectSourceStation(station)"
-                  class="px-4 py-2 cursor-pointer hover:bg-indigo-100 hover:text-indigo-700 transition-colors duration-200"
-                >
+                <p v-for="(station, i) in filteredStations" :key="i" :class="{
+                  'bg-indigo-100 text-indigo-700': i === highlightedIndex,
+                }" @click="selectSourceStation(station)"
+                  class="px-4 py-2 cursor-pointer hover:bg-indigo-100 hover:text-indigo-700 transition-colors duration-200">
                   {{ station }}
                 </p>
               </div>
@@ -70,84 +38,44 @@
           </div>
 
           <div class="flex flex-col relative w-full sm:w-[280px] space-y-4">
-            <label for="source" class="text-lg font-medium text-gray-700"
-              >Destination:</label
-            >
-            <input
-              v-model="destination"
-              @input="filterDestination"
-              type="text"
-              name="source"
-              id="source"
+            <label for="source" class="text-lg font-medium text-gray-700">Destination:</label>
+            <input v-model="destination" @input="filterDestination" type="text" name="source" id="source"
               class="border relative border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
-              placeholder="Search for a station..."
-              required
-              @keydown.down="navigateDown"
-              @keydown.up="navigateUp"
-              @keydown.enter="selectDestinationFromKeyboard"
-            />
+              placeholder="Search for a station..." required @keydown.down="navigateDown" @keydown.up="navigateUp"
+              @keydown.enter="selectDestinationFromKeyboard" />
 
             <!-- Floating Station List -->
-            <div
-              v-if="
-                destination && filteredStations.length && !destinationSelected
-              "
-              class="absolute top-full w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10"
-            >
+            <div v-if="
+              destination && filteredStations.length && !destinationSelected
+            " class="absolute top-full w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
               <div class="space-y-2">
-                <p
-                  v-for="(station, i) in filteredStations"
-                  :key="i"
-                  :class="{
-                    'bg-indigo-100 text-indigo-700': i === highlightedIndex,
-                  }"
-                  @click="selectDestinationStation(station)"
-                  class="px-4 py-2 cursor-pointer hover:bg-indigo-100 hover:text-indigo-700 transition-colors duration-200"
-                >
+                <p v-for="(station, i) in filteredStations" :key="i" :class="{
+                  'bg-indigo-100 text-indigo-700': i === highlightedIndex,
+                }" @click="selectDestinationStation(station)"
+                  class="px-4 py-2 cursor-pointer hover:bg-indigo-100 hover:text-indigo-700 transition-colors duration-200">
                   {{ station }}
                 </p>
               </div>
             </div>
           </div>
           <div class="flex flex-col relative w-full sm:w-[280px] space-y-4">
-            <label for="journey" class="text-lg font-medium text-gray-700"
-              >Date of Journey:</label
-            >
-            <input
-              type="date"
+            <label for="journey" class="text-lg font-medium text-gray-700">Date of Journey:</label>
+            <input type="date"
               class="border relative border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
-              v-model="journeyDate"
-              :min="today"
-              required
-            />
+              v-model="journeyDate" :min="today" required />
           </div>
 
-          <div
-            class="flex flex-col relative w-full sm:w-[280px] space-y-4"
-            v-if="tripType === 'round-trip'"
-          >
-            <label for="return" class="text-lg font-medium text-gray-700"
-              >Date of Return:</label
-            >
-            <input
-              type="date"
+          <div class="flex flex-col relative w-full sm:w-[280px] space-y-4" v-if="tripType === 'round-trip'">
+            <label for="return" class="text-lg font-medium text-gray-700">Date of Return:</label>
+            <input type="date"
               class="border relative border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
-              required
-              v-model="returnDate"
-              :min="journeyDate"
-            />
+              required v-model="returnDate" :min="journeyDate" />
           </div>
           <div class="flex flex-col relative w-full sm:w-[280px] space-y-4">
-            <label for="passengers" class="text-lg font-medium text-gray-700"
-              >No. of Passengers:</label
-            >
+            <label for="passengers" class="text-lg font-medium text-gray-700">No. of Passengers:</label>
             <select
               class="border relative border-gray-300 rounded-lg px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200"
-              v-model="passengers"
-              required
-              name="passengers"
-              id="passengers"
-            >
+              v-model="passengers" required name="passengers" id="passengers">
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -161,10 +89,7 @@
             </select>
           </div>
 
-          <button
-            type="submit"
-            class="bg-blue-500 text-white py-4 px-6 rounded hover:bg-blue-600"
-          >
+          <button type="submit" class="bg-blue-500 text-white py-4 px-6 rounded hover:bg-blue-600">
             Search
           </button>
         </div>
@@ -173,12 +98,21 @@
     <div v-show="loading" class="h-80 flex items-center justify-center">
       <LoadingComponent />
     </div>
-    <FlightSearch  v-if="!loading && tripType==='one-way' && flights!=null "  :flights="flights" :passengers="passengers" />
-<RoundTripComponent  v-else-if="!loading && tripType==='round-trip' && flights!=null" :departure-flights='flights.departureFlights' :return-flights="flights.returnFlights"/>
+    <div class="mt-20 mb-20">
 
-<div v-else class=" h-56 flex items-center justify-center">
-    Search A flight
-</div>
+      <FlightSearch v-if="!loading && tripType === 'one-way' && flights != null" :flights="flights"
+        :passengers="passengers" />
+
+      <RoundTripComponent v-else-if="!loading && tripType === 'round-trip' && flights != null"
+        :departure-flights='flights.departureFlights' :return-flights="flights.returnFlights" />
+      <div v-else-if="flights === null && search === true"
+        class="h-56 text-xl font-bold flex items-center justify-center">
+        There is not a flight for this route
+      </div>
+      <div v-else class=" h-56 flex items-center text-xl font-bold justify-center">
+        Search A flight
+      </div>
+    </div>
   </div>
 </template>
 
@@ -207,6 +141,7 @@ export default {
       flightStore: useFlightStore(),
       passengers: 1,
       flights: null,
+      search: false,
       source: "",
       sourceSelected: false,
       destinationSelected: false,
@@ -282,13 +217,29 @@ export default {
           this.journeyDate,
           this.returnDate
         );
+        if (result.data == null) {
+          this.flights = null
+          this.search = true
+          this.loading = false
+          return
+        }
 
         this.flightStore.setFlight(result.data);
         this.flights = result.data;
-        this.flightStore.selectedDepartureFlights=this.flights.departureFlights[0]
-        this.flightStore.selectedReturnFlights=this.flights.returnFlights[0]
-        this.flightStore.selectedJourneyPrice=this.flights.departureFlights[0].PriceSaver;
-        this.flightStore.selectedReturnPrice=this.flights.returnFlights[0].PriceSaver;
+        if (this.flights.departureFlights === null) {
+          this.flightStore.selectedDepartureFlights = null
+          this.loading = false
+          return
+        }
+        if (this.flights.returnFlights === null) {
+          this.flightStore.selectedReturnFlights = null
+          this.loading = false
+          return
+        }
+        this.flightStore.selectedDepartureFlights = this.flights.departureFlights[0]
+        this.flightStore.selectedReturnFlights = this.flights.returnFlights[0]
+        this.flightStore.selectedJourneyPrice = this.flights.departureFlights[0].PriceSaver;
+        this.flightStore.selectedReturnPrice = this.flights.returnFlights[0].PriceSaver;
 
 
         console.log(result);
@@ -297,7 +248,7 @@ export default {
         console.log(this.source);
         console.log(this.destination);
         console.log(this.journeyDate);
-        console.log(this.passengers);
+        console.log(this.passengers)
 
         const result = await searchFlightApi(
           this.source,
@@ -305,7 +256,14 @@ export default {
           this.journeyDate
         );
 
+        if (result.data.data === null) {
+          this.flights === null
+          this.search = true
+          this.loading = false
+          return
+        }
         this.flightStore.setFlight(result.data.data);
+
         this.flights = result.data.data;
         console.log(result.data.data);
         console.log(this.flights);

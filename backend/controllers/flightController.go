@@ -28,6 +28,15 @@ func (ctrl *FlightController) SearchFlightController(c *gin.Context) {
 	source := c.Query("source")
 	destination := c.Query("destination")
 	date := c.Query("date")
+	// parsedDate, err := time.Parse("2006-01-02", date)
+	// if err != nil {
+	// 	fmt.Println("Error parsing date:", err)
+	// 	return
+	// }
+	// newDate := time.Date(parsedDate.Year(), parsedDate.Month(), 10, 0, 0, 0, 0, parsedDate.Location())
+	// formattedDate := newDate.Format("2006-01-02 15:04:05.000")
+
+	// fmt.Printf(formattedDate)
 
 	flights, err := ctrl.FlightService.GetFlights(source, destination, date)
 

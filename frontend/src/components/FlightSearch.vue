@@ -1,23 +1,12 @@
 <template>
   <div v-if="flights" class="space-y-4 w-full max-w-3xl mx-auto">
-    <div
-      v-for="(flight, index) in flights"
-      :key="flight.ID"
-      class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
-    >
-      <div
-        @click="toggleFlight(index)"
-        class="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50"
-      >
+    <div v-for="(flight, index) in flights" :key="flight.ID"
+      class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div @click="toggleFlight(index)" class="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50">
         <div class="flex items-center space-x-4">
           <div class="p-2 bg-indigo-50 rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
               <path d="M20 4L8.5 15.5L4 12L2 14L8.5 20L22 6L20 4Z" />
             </svg>
           </div>
@@ -27,10 +16,7 @@
               {{ flight.Source }} → {{ flight.Destination }}
             </p>
 
-            <div
-              v-if="selectedFlight !== index"
-              class="mt-2 flex items-center space-x-4 text-sm text-gray-500"
-            >
+            <div v-if="selectedFlight !== index" class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
               <span>{{ formatDate(flight.DepartureTime) }}</span>
               <span>→</span>
               <span>{{ formatDate(flight.ArrivalTime) }}</span>
@@ -47,26 +33,15 @@
               ₹
               {{
                 selectedPrice === "Saver"
-                  ? flight.PriceSaver
-                  : flight.PriceFlexi
+                  ? flight.PriceSaver * passengers
+                  : flight.PriceFlexi * passengers
               }}
             </p>
           </div>
 
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 text-gray-400 transform transition-transform"
-            :class="{ 'rotate-180': selectedFlight === index }"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 transform transition-transform"
+            :class="{ 'rotate-180': selectedFlight === index }" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
       </div>
@@ -84,15 +59,12 @@
             </div>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <button
-              @click="selectPrice('Saver', index)"
-              :class="[
-                'p-4 rounded-lg border transition-all',
-                selectedPrice === 'Saver'
-                  ? 'border-indigo-600 bg-indigo-50 text-indigo-600'
-                  : 'border-gray-200 hover:border-indigo-600',
-              ]"
-            >
+            <button @click="selectPrice('Saver', index)" :class="[
+              'p-4 rounded-lg border transition-all',
+              selectedPrice === 'Saver'
+                ? 'border-indigo-600 bg-indigo-50 text-indigo-600'
+                : 'border-gray-200 hover:border-indigo-600',
+            ]">
               <p class="text-sm text-gray-500">Saver Fare</p>
               <p class="text-xl font-semibold">
                 ₹ {{ flight.PriceSaver * passengers }}
@@ -100,15 +72,12 @@
               <p class="text-xs text-gray-500 mt-1">Non-refundable</p>
             </button>
 
-            <button
-              @click="selectPrice('Flexi', index)"
-              :class="[
-                'p-4 rounded-lg border transition-all',
-                selectedPrice === 'Flexi'
-                  ? 'border-indigo-600 bg-indigo-50 text-indigo-600'
-                  : 'border-gray-200 hover:border-indigo-600',
-              ]"
-            >
+            <button @click="selectPrice('Flexi', index)" :class="[
+              'p-4 rounded-lg border transition-all',
+              selectedPrice === 'Flexi'
+                ? 'border-indigo-600 bg-indigo-50 text-indigo-600'
+                : 'border-gray-200 hover:border-indigo-600',
+            ]">
               <p class="text-sm text-gray-500">Flexi Fare</p>
               <p class="text-xl font-semibold">
                 ₹ {{ flight.PriceFlexi * passengers }}
@@ -117,11 +86,8 @@
             </button>
           </div>
 
-          <!-- Layover Info -->
-          <div
-            v-if="flight.layover"
-            class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg"
-          >
+
+          <div v-if="flight.layover" class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
             <p class="font-medium text-amber-700">
               Layover: {{ flight.layover }}
             </p>
@@ -131,12 +97,10 @@
             </div>
           </div>
 
-          <!-- Book Button -->
+
           <div class="flex justify-end pt-2">
-            <button
-              v-show="type == null"
-              class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
+            <button v-show="type == null" @click="bookFlights(index)"
+              class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
               Book Now
             </button>
           </div>
@@ -193,6 +157,7 @@ export default {
       "setReturnFlights",
       "setJourneyPrice",
       "setReturnPrice",
+      "setSelectedBookFlights",
     ]),
   },
 
@@ -222,6 +187,23 @@ export default {
         flightStore.setReturnFlights(this.flights[index]);
       }
     },
+    bookFlights(index) {
+      const flightStore = useFlightStore();
+
+      const selectedFlight = this.flights[index]
+      console.log(selectedFlight);
+      selectedFlight.passengers = this.passengers
+
+      if (this.selectedPrice === "Saver") {
+        selectedFlight.defaultPrice = selectedFlight.PriceSaver
+      } else {
+        selectedFlight.defaultPrice = selectedFlight.PriceFlexi
+
+      }
+      flightStore.setSelectedBookFlights(selectedFlight)
+      console.log(flightStore.selectedBookFlights);
+      this.$router.push('/book')
+    }
   },
 };
 </script>
