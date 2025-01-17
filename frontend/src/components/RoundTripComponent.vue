@@ -90,7 +90,11 @@ export default {
 
     },
 
-    methods: {},
+    methods: {
+        bookFlights(){
+         this.$router.push('/book')
+        }
+    },
 
     computed: {
         ...mapState(useFlightStore, ['selectedDepartureFlights', 'selectedReturnFlights', 'selectedJourneyPrice', 'selectedReturnPrice'])

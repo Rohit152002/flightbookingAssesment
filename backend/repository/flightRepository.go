@@ -44,13 +44,3 @@ func (r *FlightRepository) GetConnectingFlights(source, date string) ([]models.F
 	}
 	return flights, nil
 }
-
-// func (r *FlightRepository) GetFlightsById(id int) (models.Flight, error) {
-// 	var flight models.Flight
-
-// 	result,err:= r.DB.First(&flight,id);
-// 	if err!=nil{
-// 		return nil,err
-// 	}
-
-// }

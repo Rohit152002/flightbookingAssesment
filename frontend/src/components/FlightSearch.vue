@@ -2,7 +2,10 @@
   <div v-if="flights" class="space-y-4 w-full max-w-3xl mx-auto">
     <div v-for="(flight, index) in flights" :key="flight.ID"
       class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <div @click="toggleFlight(index)" class="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50">
+      <div @click="toggleFlight(index)" class="p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50"
+      :class="{
+        'bg-blue-400 hover:bg-blue-300':selectedFlight===index
+      }">
         <div class="flex items-center space-x-4">
           <div class="p-2 bg-indigo-50 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -11,8 +14,16 @@
             </svg>
           </div>
           <div>
-            <h3 class="font-medium text-gray-900">{{ flight.Airline }}</h3>
-            <p class="text-sm text-gray-500">
+            <h3 class="font-medium text-gray-900"
+            :class="{
+
+        'text-white':selectedFlight===index
+      }">{{ flight.Airline }}</h3>
+            <p class="text-sm text-gray-500"
+            :class="{
+
+'text-white':selectedFlight===index
+}">
               {{ flight.Source }} → {{ flight.Destination }}
             </p>
 
@@ -28,7 +39,11 @@
         </div>
         <div class="flex items-center space-x-4">
           <div class="text-right">
-            <p class="text-sm text-gray-600">From</p>
+            <p class="text-sm text-gray-600"
+            :class="{
+
+'text-white':selectedFlight===index
+}">From</p>
             <p class="text-lg font-semibold text-indigo-600">
               ₹
               {{
@@ -142,7 +157,7 @@ export default {
   data() {
     return {
       selectedPrice: "Saver",
-      selectedFlight: null,
+      selectedFlight: 0,
     };
   },
   computed: {
@@ -179,7 +194,7 @@ export default {
       }
     },
     toggleFlight(index) {
-      this.selectedFlight = this.selectedFlight === index ? null : index;
+      this.selectedFlight =index
       const flightStore = useFlightStore();
       if (this.type === "Departure") {
         flightStore.setDepartureFlights(this.flights[index]);
