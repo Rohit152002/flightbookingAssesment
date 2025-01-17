@@ -3,6 +3,7 @@ package services
 import (
 	"flight/models"
 	"flight/repository"
+	"fmt"
 )
 
 type FlightServices struct {
@@ -34,6 +35,9 @@ func (s *FlightServices) mapFlightDetails(flights []models.Flight) []models.Flig
 func (s *FlightServices) mapConnectingFlights(layoverFlights []models.Flight, destination, date string) ([]models.FlightResponse, error) {
 	var connectingFlightResponses []models.FlightResponse
 	for _, layover := range layoverFlights {
+		if layover.Destination == destination {
+			break
+		}
 		nextLegs, err := s.Repo.GetDirectFlights(layover.Destination, destination, date)
 		if err != nil {
 			return nil, err
@@ -57,7 +61,9 @@ func (s *FlightServices) mapConnectingFlights(layoverFlights []models.Flight, de
 	return connectingFlightResponses, nil
 }
 
-func (s *FlightServices) GetFlights(source, destination, date string) ([]models.FlightResponse, error) {
+func (s *FlightServices) GetFlights(source string, destination string, date string) ([]models.FlightResponse, error) {
+	fmt.Printf("Running query with source: %s, destination: %s, date: %s", source, destination, date)
+
 	directFlights, err := s.Repo.GetDirectFlights(source, destination, date)
 	if err != nil {
 		return nil, err

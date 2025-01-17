@@ -1,5 +1,9 @@
 <template>
     <!-- <FlightDetail :flight="selectedBookFlights" /> -->
+    <div class="w-full bg-blue-100 py-8 text-center rounded-md mr-5 ">
+
+        <p class="font-bold text-3xl">Enter Passenger Details</p>
+    </div>
     <PassengerForm />
 </template>
 

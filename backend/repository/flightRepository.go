@@ -25,10 +25,10 @@ func (r *FlightRepository) GetStation() (*[]string, error) {
 	return &stations, nil
 }
 
-func (r *FlightRepository) GetDirectFlights(source, destination string, date string) ([]models.Flight, error) {
+func (r *FlightRepository) GetDirectFlights(source string, destination string, date string) ([]models.Flight, error) {
 	var flights []models.Flight
 
-	result := r.DB.Where("source = ? AND destination = ? AND date=?", source, destination, date).Find(&flights)
+	result := r.DB.Where("source = ? AND destination = ? AND date = ?", source, destination, date).Find(&flights)
 	if result.Error != nil {
 		return nil, result.Error
 	}

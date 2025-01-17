@@ -24,11 +24,12 @@ type Booking struct {
 	Passenger   Passenger
 	FlightId    int
 	Flight      Flight
+	FlightType  string
+	Price       float64
 }
 
 type Passenger struct {
 	gorm.Model
-	BookingId int
 	Title     string
 	FirstName string
 	LastName  string

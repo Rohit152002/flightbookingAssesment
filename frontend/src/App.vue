@@ -19,19 +19,8 @@ export default {
 </script>
 
 <template>
-  <header>
-
-
-    <nav class="bg-blue-400 px-4 py-2 flex gap-2 items-center">
-      <RouterLink to="/" class="text-xl font-sans px-4 py-2" active-class="activeLink">Flight</RouterLink>
-      <RouterLink aria-disabled="true" to="/" class="text-xl font-sans px-4 py-2  cursor-not-allowed">Hotel
-      </RouterLink>
-    </nav>
-
-    <button v-if="currentRouteName !== '/'" @click="goBackFunction"
-      class="bg-blue-600 px-4 py-2 rounded-md text-white ml-5 my-4">Back</button>
-
-  </header>
+  <!-- <button v-if="currentRouteName !== '/'" @click="goBackFunction"
+    class="bg-blue-600 px-4 py-2 rounded-md text-white ml-5 my-4">Back</button> -->
 
   <RouterView />
 </template>
