@@ -12,6 +12,16 @@
                 <!-- First Name Input -->
                 <div class="flex  gap-4 w-full items-stretch">
 
+
+                    <div class="w-full">
+                        <label for="title" class="block text-sm font-medium text-gray-600">Title:</label>
+                        <select :name="`title-${index}`" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            @change="updatePassengerData(index - 1, 'title', $event.target.value)" required>
+                            <option value="" disabled selected>Select title</option>
+                            <option value="Mr">Mr</option>
+                            <option value="Ms">Ms</option>
+                        </select>
+                    </div>
                     <div class="w-full">
                         <label for="firstName" class="block text-sm font-medium text-gray-600">First Name:</label>
                         <input type="text" :value="passengerData[index - 1]?.firstName || ''"
@@ -68,7 +78,11 @@ export default {
         // Handle form submission
         submitForm() {
             console.log('Form Submitted with:', this.passengerData);
+            this.selectedBookFlights.passengerDetails=this.passengerData
             this.$router.push("/seat")
+        },
+        addTitle(event){
+            this.passengerData.title=event.target.value
         },
 
         // Update passenger data

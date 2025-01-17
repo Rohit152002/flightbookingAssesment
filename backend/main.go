@@ -28,6 +28,7 @@ func main() {
 	httpServer.Use(cors.Default())
 
 	routes.FlightRoutes(httpServer, db)
+	routes.PaymentRoutes(httpServer)
 
 	httpServer.Run(":8080")
 }

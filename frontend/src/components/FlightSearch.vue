@@ -206,8 +206,10 @@ export default {
       const flightStore = useFlightStore();
 
       const selectedFlight = this.flights[index]
+
       console.log(selectedFlight);
       selectedFlight.passengers = this.passengers
+      selectedFlight.Id=this.flights[index].ID
 
       if (this.selectedPrice === "Saver") {
         selectedFlight.defaultPrice = selectedFlight.PriceSaver

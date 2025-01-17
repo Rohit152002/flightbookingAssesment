@@ -98,7 +98,7 @@ export default {
     return {
       toast: false,
       message: "All seats selected successfully",
-      rows: 10,
+      rows: 60,
       column: 3,
       selectedSeats: [],
     };
