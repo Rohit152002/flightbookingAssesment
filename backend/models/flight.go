@@ -22,7 +22,7 @@ type Booking struct {
 	gorm.Model
 	PassengerID *int // Allow NULL initially
 	Passenger   Passenger
-	PNRnumber string
+	PNRnumber   string
 	FlightID    int `gorm:"not null"`
 	Flight      Flight
 	TicketType  string  `gorm:"not null"`
@@ -36,4 +36,5 @@ type Passenger struct {
 	FirstName  string
 	LastName   string
 	SeatNumber int
+	Email      string
 }

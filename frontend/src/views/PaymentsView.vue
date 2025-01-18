@@ -216,8 +216,18 @@ export default {
       };
 
       const response = await paymentValidation(paymentDetails);
-      console.log(response);
-      console.log(this.selectedBookFlights);
+
+      this.selectedBookFlights.passengerDetails.forEach((passenger,index) => {
+          passenger.seatNumber=this.selectedBookFlights.selectedSeats[index]
+        });
+
+        const bookingDetails={
+          flightId:this.selectedBookFlights.ID,
+          defaultPrice:this.selectedBookFlights.defaultPrice,
+          ticketType:this.selectedBookFlights.defaultPrice===this.selectedBookFlights.PriceSaver ? "Saver":"Flexi",
+          passengerDetails:this.selectedBookFlights.passengerDetails,
+        }
+        console.log(bookingDetails);
 
     },
   },

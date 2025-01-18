@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 p-8">
-    <div class="max-w-4xl mx-auto relative">
+    <div class="max-w-6xl   mx-auto relative">
       <!-- Back button -->
       <button @click="goBack"
         class="absolute -left-4 top-0 p-2 text-gray-600 hover:text-gray-900 transition-colors">
@@ -31,7 +31,7 @@
         </div>
 
         <!-- Seat Grid -->
-        <div class="flex-1">
+        <div class="">
           <div class="grid grid-cols-2 gap-8">
             <div v-for="rowIndex in rows" :key="rowIndex" class="flex gap-4 justify-center">
               <button v-for="seatIndex in column"
@@ -57,10 +57,7 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Price and Continue -->
-      <div class="mt-12 flex justify-between items-center bg-white p-6 rounded-lg shadow-sm">
+      <div class="mt-12 flex w-fit gap-10 justify-between items-center bg-white p-6 rounded-lg shadow-sm">
         <div class="text-gray-800">
           <span class="text-sm">Total Price</span>
           <p class="text-2xl font-light">{{ priceBySelected.toLocaleString() }}</p>
@@ -78,6 +75,9 @@
           Continue
         </button>
       </div>
+      </div>
+
+      <!-- Price and Continue -->
 
       <!-- Toast Notification -->
       <div v-if="toast"

@@ -1,5 +1,4 @@
 <template>
-  <!-- <FlightDetail :flight="selectedBookFlights" /> -->
   <div class="w-full bg-blue-100 py-8 text-center rounded-md mr-5">
     <button
       @click="goBack"
@@ -15,7 +14,6 @@
 <script>
 import { useFlightStore } from "@/stores/flight";
 import { mapState } from "pinia";
-import FlightDetail from "@/components/FlightDetail.vue";
 import PassengerForm from "@/components/PassengerForm.vue";
 
 export default {
@@ -33,7 +31,6 @@ export default {
     },
   },
   mounted() {
-    console.log(this.selectedBookFlights);
   },
 };
 </script>

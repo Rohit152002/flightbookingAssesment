@@ -77,6 +77,7 @@ export default {
     methods: {
         // Handle form submission
         submitForm() {
+
             console.log('Form Submitted with:', this.passengerData);
             this.selectedBookFlights.passengerDetails=this.passengerData
             this.$router.push("/seat")

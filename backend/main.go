@@ -29,6 +29,7 @@ func main() {
 
 	routes.FlightRoutes(httpServer, db)
 	routes.PaymentRoutes(httpServer)
+	routes.BookRoutes(httpServer, db)
 
 	httpServer.Run(":8080")
 }
