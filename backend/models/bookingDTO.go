@@ -12,5 +12,5 @@ type PassengerDetail struct {
 	FirstName  string `json:"firstname"`
 	LastName   string `json:"lastname"`
 	Email      string `json:"email"`
-	SeatNumber string `json:"seatNumber"`
+	SeatNumber int    `json:"seatNumber"`
 }

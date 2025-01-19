@@ -16,6 +16,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "feather-icons": "^4.29.2",
+    "file-saver": "^2.0.5",
     "lucide-vue-next": "^0.469.0",
     "pinia": "^2.3.0",
     "radix-vue": "^1.9.12",

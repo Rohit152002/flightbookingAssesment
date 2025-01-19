@@ -4,6 +4,7 @@ go 1.23.4
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
+	github.com/andrewcharlton/wkhtmltopdf-go v0.0.0-20181104223037-0049d75fb708
 	github.com/gin-contrib/cors v1.7.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/joho/godotenv v1.5.1

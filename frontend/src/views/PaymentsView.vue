@@ -95,7 +95,6 @@
         <div class="flex gap-4 pt-4">
           <button
             type="submit"
-            @click="submitPayment"
             class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Complete Payment
@@ -131,6 +130,7 @@
 </template>
 
 <script>
+import { bookFlights } from '@/api/flight';
 import { paymentValidation } from '@/api/paymentValid';
 import { useFlightStore } from '@/stores/flight';
 import { mapState } from 'pinia';
@@ -204,30 +204,37 @@ export default {
       this.validateCVV();
       this.validateExpiryDate();
 
-      if (!Object.values(this.errors).some((error) => error)) {
-        // Simulate API submission
-        this.bookingReference = "123ABC456";
-      }
+    //   if (!Object.values(this.errors).some((error) => error)) {
+    //     // Simulate API submission
+    //   }
 
-       const paymentDetails = {
+    const paymentDetails = {
         CardNumber: this.payment.ccNumber,
         CVV: this.payment.cvv,
         ExpiryDate: this.payment.expiryDate,
-      };
+    };
 
-      const response = await paymentValidation(paymentDetails);
+    const response = await paymentValidation(paymentDetails);
 
-      this.selectedBookFlights.passengerDetails.forEach((passenger,index) => {
-          passenger.seatNumber=this.selectedBookFlights.selectedSeats[index]
+    if(response.status===200)
+    {
+        this.selectedBookFlights.passengerDetails.forEach((passenger,index) => {
+            passenger.seatNumber=this.selectedBookFlights.selectedSeats[index]
         });
 
         const bookingDetails={
-          flightId:this.selectedBookFlights.ID,
-          defaultPrice:this.selectedBookFlights.defaultPrice,
-          ticketType:this.selectedBookFlights.defaultPrice===this.selectedBookFlights.PriceSaver ? "Saver":"Flexi",
-          passengerDetails:this.selectedBookFlights.passengerDetails,
+            flightId:this.selectedBookFlights.ID,
+            defaultPrice:this.selectedBookFlights.defaultPrice,
+            ticketType:this.selectedBookFlights.defaultPrice===this.selectedBookFlights.PriceSaver ? "Saver":"Flexi",
+            passengerDetails:this.selectedBookFlights.passengerDetails,
         }
         console.log(bookingDetails);
+
+        const res = await bookFlights(bookingDetails)
+        console.log(res);
+        this.bookingReference = res.data.results.BookingReferenceNo;
+        this.$router.push(`/report/${this.bookingReference}`)
+        }
 
     },
   },

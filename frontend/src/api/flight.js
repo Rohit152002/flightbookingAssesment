@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosInstance from "./interceptor";
 
 export function getStationApi() {
@@ -26,6 +27,25 @@ export function searchFlightWithReturnDate(
       destination,
       "departure-date": departureDate,
       "return-date": returnDate,
+    },
+  });
+}
+
+export function bookFlights(bookFlightObject) {
+  return axiosInstance.post("/books", {
+    ...bookFlightObject,
+  });
+}
+
+export function getFlightsByReferenceNo(referenceNo) {
+  return axiosInstance.get(`/books/${referenceNo}`);
+}
+
+export function downloadTickets(referenceNo) {
+  return axios.get(`http://localhost:8080/pdf/${referenceNo}`, {
+    responseType: "blob",
+    headers: {
+      Accept: "application/pdf",
     },
   });
 }

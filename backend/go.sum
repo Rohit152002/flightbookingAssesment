@@ -1,5 +1,7 @@
 github.com/DATA-DOG/go-sqlmock v1.5.2 h1:OcvFkGmslmlZibjAjaHm3L//6LiuBgolP7OputlJIzU=
 github.com/DATA-DOG/go-sqlmock v1.5.2/go.mod h1:88MAG/4G7SMwSE3CeA0ZKzrT5CiOU3OJ+JlNzwDqpNU=
+github.com/andrewcharlton/wkhtmltopdf-go v0.0.0-20181104223037-0049d75fb708 h1:Lcgs6r8zjQ6H8CvjtZH7kBYF52HC9YYYoliGw7wR3hE=
+github.com/andrewcharlton/wkhtmltopdf-go v0.0.0-20181104223037-0049d75fb708/go.mod h1:HxUaKPjh2VPhzRjZ5HszPiGzKFBU5d9ynuMQ82uCZKk=
 github.com/bytedance/sonic v1.12.6 h1:/isNmCUF2x3Sh8RAp/4mh4ZGkcFAX/hLrzrK3AvpRzk=
 github.com/bytedance/sonic v1.12.6/go.mod h1:B8Gt/XvtZ3Fqj+iSKMypzymZxw/FVwgIGKzMzT9r/rk=
 github.com/bytedance/sonic/loader v0.1.1/go.mod h1:ncP89zfokxS5LZrJxl5z0UJcsk4M4yY2JpfqGeCtNLU=

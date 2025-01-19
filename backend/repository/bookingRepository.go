@@ -12,9 +12,7 @@ type BookRepository struct {
 }
 
 func (booking *BookRepository) Create(newBooking models.Booking) (*models.Booking, error) {
-	if newBooking.PassengerID == nil {
-		return nil, errors.New("PassengerID cannot be null")
-	}
+
 	if newBooking.FlightID == 0 {
 		return nil, errors.New("FlightID cannot be zero")
 	}
@@ -26,8 +24,23 @@ func (booking *BookRepository) Create(newBooking models.Booking) (*models.Bookin
 	}
 
 	result := booking.DB.Create(&newBooking)
+	if err := booking.DB.Preload("Flight").First(&newBooking, newBooking.ID).Error; err != nil {
+		return nil, err
+	}
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return &newBooking, nil
+}
+
+func (booking *BookRepository) FindByReferenceNumber(referenceNo string) (*models.Booking, error) {
+	var booked models.Booking
+
+	// Use Preload to fetch related Flight and Passengers in a single query
+	if err := booking.DB.Preload("Flight").Preload("Passengers").
+		Where("booking_reference_no = ?", referenceNo).First(&booked).Error; err != nil {
+		return nil, err
+	}
+
+	return &booked, nil
 }

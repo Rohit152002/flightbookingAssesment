@@ -13,7 +13,7 @@ type PassengerRepository struct {
 
 func (repo *PassengerRepository) Create(newPassenger models.Passenger) (*models.Passenger, error) {
 	if newPassenger.Title == "" {
-		return nil, errors.New("Title cannot be empty")
+		return nil, errors.New("title cannot be empty")
 	}
 	if newPassenger.FirstName == "" {
 		return nil, errors.New("FirstName cannot be empty")

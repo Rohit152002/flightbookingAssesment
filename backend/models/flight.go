@@ -20,18 +20,18 @@ type Flight struct {
 
 type Booking struct {
 	gorm.Model
-	PassengerID *int // Allow NULL initially
-	Passenger   Passenger
-	PNRnumber   string
-	FlightID    int `gorm:"not null"`
-	Flight      Flight
-	TicketType  string  `gorm:"not null"`
-	Price       float64 `gorm:"not null"`
+	PNRnumber          string `gorm:"not null"`
+	FlightID           int    `gorm:"not null"`
+	Flight             Flight
+	TicketType         string      `gorm:"not null"`
+	Price              float64     `gorm:"not null"`
+	Passengers         []Passenger `gorm:"foreignKey:BookingID"`
+	BookingReferenceNo string      `gorm:"not null"`
 }
 
 type Passenger struct {
 	gorm.Model
-	BookingId  int
+	BookingID  int
 	Title      string
 	FirstName  string
 	LastName   string
