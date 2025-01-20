@@ -71,3 +71,23 @@ func (ctrl *BookingController) DownloadPdf(ctx *gin.Context) {
 		log.Fatal("Error serving pdf")
 	}
 }
+
+func (ctrl *BookingController) SendingEmail(ctx *gin.Context) {
+	var emailDto models.EmailSendingDTO
+	if err := ctx.ShouldBindJSON(&emailDto); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
+
+	result, err := ctrl.BookingService.SendMail(emailDto.Email, emailDto.ReferencNo)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"result":  result,
+		"message": "email has been sent successfull",
+	})
+}

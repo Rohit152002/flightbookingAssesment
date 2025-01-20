@@ -49,3 +49,10 @@ export function downloadTickets(referenceNo) {
     },
   });
 }
+
+export function sendEmailApi(email, referenceNo) {
+  return axiosInstance.post("/email", {
+    email,
+    referenceNo,
+  });
+}

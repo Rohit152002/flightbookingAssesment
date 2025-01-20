@@ -20,4 +20,5 @@ func BookRoutes(router *gin.Engine, db *gorm.DB) {
 	router.POST("/books", bookingController.BookPassengersAsync)
 	router.GET("/books/:referenceNo", bookingController.FindBooking)
 	router.GET("/pdf/:referenceNo", bookingController.DownloadPdf)
+	router.POST("/email", bookingController.SendingEmail)
 }

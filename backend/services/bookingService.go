@@ -1,14 +1,20 @@
 package services
 
 import (
+	"bytes"
 	"errors"
 	"flight/models"
 	"flight/repository"
 	"fmt"
 	"html/template"
+	"io"
+	"log"
 	"math/rand"
 
 	"time"
+
+	"github.com/andrewcharlton/wkhtmltopdf-go"
+	"gopkg.in/gomail.v2"
 )
 
 type BookingService struct {
@@ -70,11 +76,12 @@ func generatePNRNumber() string {
 }
 
 func generateHtml(bookingDetails models.Booking) string {
-	html := `
+	basehtml := `
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
+    <title>Flight Booking Report</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -82,178 +89,152 @@ func generateHtml(bookingDetails models.Booking) string {
             margin: 0;
             padding: 20px;
         }
-        .container {
-            max-width: 800px;
+        table {
+            border-collapse: collapse;
+            width: 100%%;
         }
-        .ticket {
+        .main-container {
+            width: 800px;
+            margin: 0 auto;
+        }
+        .report-header {
             background: white;
+            padding: 24px;
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-bottom: 24px;
-            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .ticket-header {
-            background: linear-gradient(to right, #2563eb, #1d4ed8);
-            padding: 24px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .section-title {
+            color: #111827;
+            font-size: 24px;
+            margin: 0 0 24px 0;
+            padding: 0;
         }
-        .ticket-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 0;
+        .sub-title {
+            color: #374151;
+            font-size: 18px;
+            margin: 0 0 16px 0;
+            padding: 0;
         }
-        .pnr {
-		color:black;
-            font-size: 14px;
-            opacity: 0.9;
+        .info-cell {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            vertical-align: top;
         }
-        .ticket-body {
-            padding: 24px;
-        }
-        .flight-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .flight-id {
-            color: #6b7280;
-            font-size: 14px;
-        }
-        .route{
-		width: 100%;
-		 border-collapse: collapse;
-		  text-align: center;
-		  position:relative;
-        }
-        .location {
-		display:flex;
-            text-align: center;
-            flex: 1;
-        }
-        .location-label {
+        .info-label {
             color: #6b7280;
             font-size: 14px;
             margin-bottom: 4px;
         }
-        .location-city {
-            font-size: 18px;
+        .info-value {
+            font-size: 16px;
             font-weight: bold;
             color: #111827;
-            margin: 4px 0;
+            margin-bottom: 12px;
         }
-        .location-time {
-            font-size: 14px;
-            color: #374151;
+        .spacer-row {
+            height: 24px;
         }
-        .route-line {
-            flex: 1;
-            height: 2px;
-            border-top: 2px dashed #d1d5db;
-            margin: 0 20px;
-            position: relative;
-        }
-        .route-arrow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #2563eb;
-            font-size: 24px;
-        }
-        .passenger-details {
-            margin-top: 20px;
-            padding-top: 20px;
+        .divider {
             border-top: 1px solid #e5e7eb;
-        }
-        .passenger-box {
-            background-color: #f9fafb;
-            padding: 16px;
-            border-radius: 8px;
-        }
-        .passenger-label {
-            color: #6b7280;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-        .passenger-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #111827;
-            margin: 0;
+            margin: 24px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-    `
+    <table class="main-container">
+        <tr>
+            <td>
+                <div class="report-header">
+                    <h1 class="section-title">Flight Booking Report</h1>
 
+                    <!-- Booking Info -->
+                    <table>
+                        <tr>
+                            <td width="50%%" class="info-cell">
+                                <div class="info-label">Booking Reference Number</div>
+                                <div class="info-value">%s</div>
+                            </td>
+                            <td width="50%%" class="info-cell" style="padding-left: 16px;">
+                                <div class="info-label">Flight ID</div>
+                                <div class="info-value">%d</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="divider"></div>
+
+                    <!-- Flight Details -->
+                    <h2 class="sub-title">Flight Details</h2>
+                    <table>
+                        <tr>
+                            <td width="50%%" class="info-cell">
+                                <div class="info-label">From</div>
+                                <div class="info-value">%s</div>
+                                <div class="info-label">Departure Time</div>
+                                <div class="info-value">%s</div>
+                            </td>
+                            <td width="50%%" class="info-cell" style="padding-left: 16px;">
+                                <div class="info-label">To</div>
+                                <div class="info-value">%s</div>
+                                <div class="info-label">Arrival Time</div>
+                                <div class="info-value">%s</div>
+                            </td>
+                            <td width="50%%" class="info-cell" style="padding-left: 16px;">
+                                <div class="info-label">Price</div>
+                                <div class="info-value">Rs %.2v</div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="divider"></div>
+
+                    <!-- Passenger Details -->
+                    <h2 class="sub-title">Passenger Details</h2>`
+
+	html := fmt.Sprintf(basehtml,
+		bookingDetails.PNRnumber,
+		bookingDetails.FlightID,
+		bookingDetails.Flight.Source,
+		formatTime(bookingDetails.Flight.DepartureTime),
+		bookingDetails.Flight.Destination,
+		formatTime(bookingDetails.Flight.ArrivalTime),
+		int(bookingDetails.Price)*len(bookingDetails.Passengers))
+
+	// Add passenger details
 	for _, passenger := range bookingDetails.Passengers {
-		html += fmt.Sprintf(`
-        <div class="ticket">
-            <div class="ticket-header">
-                <h2 class="ticket-title">Flight Ticket</h2>
-                <span class="pnr">PNR: %s</span>
-				<h2 class="ticket-title">Flight Ticket</h2>
-				<span class="pnr">Seat Number: %d</span>
-            </div>
-
-
-
-
-            <div class="ticket-body">
-                <div class="flight-info">
-                    <span class="flight-id">Flight ID: %d</span>
-                </div>
-
-                <table class="route">
-				<tr>
-                            <td style="padding: 8px;">
-
-                        <div class="location-label">From</div>
-                        <div class="location-city">%s</div>
-                        <div class="location-time">%s</div>
-         </td>
-
-
-                        <td class="route-arrow">→</td>
-
-
-                    <td class="padding: 8px;">
-                        <div class="location-label">To</div>
-                        <div class="location-city">%s</div>
-                        <div class="location-time">%s</div>
-                    </td>
-					</tr>
-                </table>
-
-                <div class="passenger-details">
-                    <div class="passenger-box">
-                        <div class="passenger-label">Passenger Details</div>
-                        <p class="passenger-name">%s %s</p>
-                    </div>
-                </div>
-
-
-            </div>
-        </div>`,
-			bookingDetails.PNRnumber,
-			passenger.SeatNumber,
-			bookingDetails.FlightID,
-			bookingDetails.Flight.Source,
-			formatTime(bookingDetails.Flight.DepartureTime),
-			bookingDetails.Flight.Destination,
-			formatTime(bookingDetails.Flight.ArrivalTime),
+		passengerHtml := fmt.Sprintf(`
+                    <table>
+                        <tr>
+                            <td class="info-cell" style="margin-bottom: 12px;">
+                                <table width="">
+                                    <tr>
+                                        <td width="50%%">
+                                            <div class="info-label">Passenger Name</div>
+                                            <div class="info-value">%s %s</div>
+                                        </td>
+                                        <td width="50%%">
+                                            <div class="info-label">Seat Number</div>
+                                            <div class="info-value">%d</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr class="spacer-row"><td></td></tr>`,
 			passenger.FirstName,
 			passenger.LastName,
-		)
+			passenger.SeatNumber)
+		html += passengerHtml
 	}
 
+	// Close all tags
 	html += `
-    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>`
 
@@ -271,6 +252,51 @@ func (service *BookingService) GeneretePdfToDownload(referenceNo string) (*templ
 	}
 	tmpl := template.Must(template.New("page").Parse(generateHtml(*result)))
 	return tmpl, nil
+}
+func (service *BookingService) SendMail(email string, referenceNo string) (bool, error) {
+	result, err := service.BookingRepo.FindByReferenceNumber(referenceNo)
+	if err != nil {
+		return false, err
+	}
+	htmlContent := generateHtml(*result)
+	pdfData, err := generatePDF(htmlContent)
+	if err != nil {
+		return false, err
+	}
+
+	msg := gomail.NewMessage()
+	msg.SetHeader("From", "laishramrohit15@gmail.com")
+	msg.SetHeader("To", email)
+	msg.SetHeader("Subject", "Flight Ticket Report")
+	msg.SetBody("text/html", "<b>Here is your flight ticket</b>")
+	msg.Attach("booking_report.pdf", gomail.SetCopyFunc(func(w io.Writer) error {
+		_, err := w.Write(pdfData.Bytes())
+		return err
+	}))
+	n := gomail.NewDialer("smtp.gmail.com", 587, "laishramrohit15@gmail.com", "bnrk tpou pjxx gdyu")
+
+	// Send the email
+	if err := n.DialAndSend(msg); err != nil {
+		panic(err)
+	}
+	return true, nil
+}
+
+func generatePDF(htmlContent string) (*bytes.Buffer, error) {
+	doc := wkhtmltopdf.NewDocument()
+	buf := bytes.NewBufferString(htmlContent)
+	pg, err := wkhtmltopdf.NewPageReader(buf)
+	if err != nil {
+		log.Fatal("Error reading from reader.")
+	}
+	doc.AddPages(pg)
+
+	output := &bytes.Buffer{}
+	errs := doc.Write(output)
+	if errs != nil {
+		log.Fatal("Error writing to writer.")
+	}
+	return output, nil
 }
 
 func generateBookingReferenceNo() string {

@@ -7,6 +7,11 @@ type BookingDetailsDTO struct {
 	PassengerDetails []PassengerDetail `json:"passengerDetails"`
 }
 
+type EmailSendingDTO struct {
+	Email      string `json:"email"`
+	ReferencNo string `json:"referenceNo"`
+}
+
 type PassengerDetail struct {
 	Title      string `json:"title"`
 	FirstName  string `json:"firstname"`
