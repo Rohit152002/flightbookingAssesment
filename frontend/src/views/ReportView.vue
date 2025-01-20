@@ -55,7 +55,12 @@
             </svg>
             Download Ticket
           </button>
+          <div v-if="downloading">
+            <LoadingComponent/>
+          </div>
         </div>
+
+
       </div>
   <div v-if="display" class="bg-white border w-[40rem]  rounded-lg shadow-md p-8">
     <!-- Header Section -->
@@ -63,7 +68,7 @@
       <h1 class="text-2xl font-bold text-gray-900 mb-4">Flight Booking Report</h1>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <p class="text-sm text-gray-600">Booking Reference Number:</p>
+          <p class="text-sm text-gray-600">Booking PNR Number:</p>
           <p class="text-lg font-semibold text-gray-900">{{ bookingData.PNRnumber }}</p>
         </div>
         <div>
@@ -146,7 +151,8 @@ export default {
             showEmailInput:false,
             loading:false,
             toast:false,
-            message:"dummy message"
+            message:"dummy message",
+            downloading:false,
 
         };
     },
@@ -212,8 +218,12 @@ export default {
 
      async downloadTicket() {
       try {
+        this.downloading=true
         const result = await downloadTickets(this.$route.params.reference);
         console.log(result);
+        if(result.status===200){
+            this.downloading=false
+        }
 
         const blob = new Blob([result.data], { type: 'application/pdf' });
 
